@@ -16,6 +16,14 @@ configure(:development) do
                                         # & restart between edits.
 end
 
+before do
+  @storage = DatabasePersistence.new(logger)
+end
+
+after do
+  @storage.disconnect
+end
+
 helpers do
   def list_complete?(list)
     !list[:todos].empty? && todos_incomplete(list) == 0
@@ -52,10 +60,6 @@ helpers do
       block.call(todo) if todo[:completed]
     end
   end
-end
-
-before do
-  @storage = DatabasePersistence.new(logger)
 end
 
 get '/' do
