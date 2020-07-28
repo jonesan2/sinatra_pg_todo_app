@@ -1,19 +1,14 @@
 require 'sinatra'
+require 'sinatra/reloader' if development?
 require 'sinatra/content_for'
 require 'tilt/erubis'
 
-require_relative 'database_persistence'
+require_relative 'session_persistence'
 
 configure do
   enable :sessions
   set :session_secret, "secret"
   set :erb, :escape_html => true
-end
-
-configure(:development) do
-  require 'sinatra/reloader' if development?
-  also_reload "database_persistence.rb" # This eliminates the need to kill
-                                        # & restart between edits.
 end
 
 helpers do
@@ -55,7 +50,7 @@ helpers do
 end
 
 before do
-  @storage = DatabasePersistence.new(logger)
+  @storage = SessionPersistence.new(session)
 end
 
 get '/' do
